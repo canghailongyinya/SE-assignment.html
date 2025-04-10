@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>学生缺勤和权重记录</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    #searchContainer {
+      margin-bottom: 20px;
+    }
+    #searchInput {
+      padding: 8px;
+      font-size: 1rem;
+      width: 300px;
+    }
+    #searchButton {
+      padding: 8px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>学生缺勤和权重记录</h1>
+
+  <!-- 搜索功能 -->
+  <div id="searchContainer">
+    <input type="text" id="searchInput" placeholder="输入学生名字进行搜索" />
+    <button id="searchButton">搜索</button>
+    <button id="resetButton">重置</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>姓名</th>
+        <th>权重</th>
+        <th>缺勤次数</th>
+      </tr>
+    </thead>
+    <tbody id="studentRecords">
+      <!-- 学生记录将通过 JavaScript 动态填充 -->
+    </tbody>
+  </table>
+  <button onclick="goBack()">返回</button>
+  <script>
+    // 从 localStorage 加载学生记录
+    const students = JSON.parse(localStorage.getItem("students")) || [];
+    const weights = JSON.parse(localStorage.getItem("weights")) || [];
+    const absences = JSON.parse(localStorage.getItem("absences")) || new Array(students.length).fill(0);
+
+    const tableBody = document.getElementById("studentRecords");
+
+    // 渲染学生记录
+    function renderRecords(filter = "") {
+      tableBody.innerHTML = ""; // 清空表格内容
+      students.forEach((student, index) => {
+        if (filter && !student.includes(filter)) return; // 如果有过滤条件且名字不匹配，则跳过
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${student}</td>
+          <td>${weights[index].toFixed(2)}</td>
+          <td>${absences[index]}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // 初始渲染所有记录
+    renderRecords();
+
+    // 搜索功能
+    document.getElementById("searchButton").addEventListener("click", () => {
+      const filter = document.getElementById("searchInput").value.trim();
+      renderRecords(filter);
+    });
+
+    // 重置功能
+    document.getElementById("resetButton").addEventListener("click", () => {
+      document.getElementById("searchInput").value = ""; // 清空搜索框
+      renderRecords(); // 渲染所有记录
+    });
+
+    // 返回按钮功能
+    function goBack() {
+      window.location.href = "students.html";
+    }
+  </script>
+</body>
+</html>
